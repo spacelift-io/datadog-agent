@@ -73,6 +73,8 @@ func getSizeOfStructInode(kv *kernel.Version) uint64 {
 		sizeOf = 592
 	case kv.IsOracleUEKKernel():
 		sizeOf = 632
+	case kv.IsCOSKernel():
+		sizeOf = 712
 	case kv.Code != 0 && kv.Code < kernel.Kernel4_16:
 		sizeOf = 608
 	case kv.IsInRangeCloseOpen(kernel.Kernel5_0, kernel.Kernel5_1):
