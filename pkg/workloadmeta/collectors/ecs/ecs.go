@@ -19,7 +19,7 @@ import (
 	ecsutil "github.com/DataDog/datadog-agent/pkg/util/ecs"
 	ecsmeta "github.com/DataDog/datadog-agent/pkg/util/ecs/metadata"
 	v1 "github.com/DataDog/datadog-agent/pkg/util/ecs/metadata/v1"
-	v3 "github.com/DataDog/datadog-agent/pkg/util/ecs/metadata/v3"
+	v3or4 "github.com/DataDog/datadog-agent/pkg/util/ecs/metadata/v3or4"
 	"github.com/DataDog/datadog-agent/pkg/workloadmeta"
 	"github.com/DataDog/datadog-agent/pkg/workloadmeta/collectors/util"
 )
@@ -145,7 +145,13 @@ func (c *collector) parseTasks(ctx context.Context, tasks []v1.Task) []workloadm
 					continue
 				}
 
-				uri, ok := container.EnvVars[v3.DefaultMetadataURIEnvVariable]
+				uri, ok := container.EnvVars[v3or4.DefaultMetadataURIv4EnvVariable]
+				if ok && uri != "" {
+					metaURI = uri
+					break
+				}
+
+				uri, ok = container.EnvVars[v3or4.DefaultMetadataURIv3EnvVariable]
 				if ok && uri != "" {
 					metaURI = uri
 					break
@@ -153,8 +159,8 @@ func (c *collector) parseTasks(ctx context.Context, tasks []v1.Task) []workloadm
 			}
 
 			if metaURI != "" {
-				metaV3 := v3.NewClient(metaURI)
-				taskWithTags, err := metaV3.GetTaskWithTags(ctx)
+				metaV3orV4 := v3or4.NewClient(metaURI)
+				taskWithTags, err := metaV3orV4.GetTaskWithTags(ctx)
 				if err == nil {
 					entity.Tags = taskWithTags.TaskTags
 					entity.ContainerInstanceTags = taskWithTags.ContainerInstanceTags
