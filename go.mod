@@ -172,7 +172,7 @@ require (
 	github.com/oliveagle/jsonpath v0.0.0-20180606110733-2e52cf6e6852 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.17.0 // indirect
-	github.com/open-policy-agent/opa v0.35.0
+	github.com/open-policy-agent/opa v0.36.1
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/resourcetotelemetry v0.43.0
 	github.com/opencontainers/runtime-spec v1.0.3-0.20210326190908-1c3f411f0417
 	github.com/opencontainers/selinux v1.9.1 // indirect
