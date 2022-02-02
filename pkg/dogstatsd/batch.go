@@ -1,6 +1,7 @@
 package dogstatsd
 
 import (
+	"sync"
 	"time"
 
 	"github.com/DataDog/datadog-agent/pkg/aggregator"
@@ -10,6 +11,7 @@ import (
 // batcher batches multiple metrics before submission
 // this struct is not safe for concurrent use
 type batcher struct {
+	sync.Mutex
 	samples      []metrics.MetricSample
 	samplesCount int
 
@@ -36,6 +38,8 @@ func newBatcher(agg *aggregator.BufferedAggregator) *batcher {
 }
 
 func (b *batcher) appendSample(sample metrics.MetricSample) {
+	b.Lock()
+	defer b.Unlock()
 	if b.samplesCount == len(b.samples) {
 		b.flushSamples()
 	}
@@ -65,6 +69,8 @@ func (b *batcher) flushSamples() {
 
 // flush pushes all batched metrics to the aggregator.
 func (b *batcher) flush() {
+	b.Lock()
+	defer b.Unlock()
 	b.flushSamples()
 	if len(b.events) > 0 {
 		t1 := time.Now()
